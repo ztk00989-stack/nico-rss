@@ -61,7 +61,11 @@ async function load(){
 
             const xml = new DOMParser().parseFromString(xmlText,"text/xml");
 
-            const item = xml.querySelector("item");
+const items = xml.querySelectorAll("item");
+
+if (items.length === 0) continue;
+
+const item = items[items.length - 1];
 
             if(!item) continue;
 
