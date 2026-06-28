@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ニコニコRSS Monitor</title>
+
+<style>
+body{
+    font-family:sans-serif;
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+.item{
+    border-bottom:1px solid #ccc;
+    padding:12px 0;
+}
+
+.name{
+    font-weight:bold;
+    font-size:18px;
+}
+
+.title{
+    margin:8px 0;
+}
+
+.links a{
+    margin-right:15px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>ニコニコRSS Monitor</h1>
+
+<div id="status">読み込み中...</div>
+
+<div id="list"></div>
+
+<script>
+
+async function load(){
+
+    const txt = await fetch("users.txt").then(r=>r.text());
+
+    const users = txt
+        .split(/\r?\n/)
+        .map(v=>v.trim())
+        .filter(v=>v);
+
+    let videos=[];
+
+    for(const id of users){
+
+        try{
+
+            const xmlText = await fetch(`rss/${id}.xml`).then(r=>r.text());
+
+            const xml = new DOMParser().parseFromString(xmlText,"text/xml");
+
+            const item = xml.querySelector("item");
+
+            if(!item) continue;
+
+            videos.push({
+
+                user:id,
+
+                channel:
+                    xml.querySelector("channel > title")?.textContent ?? id,
+
+                title:
+                    item.querySelector("title")?.textContent ?? "",
+
+                link:
+                    item.querySelector("link")?.textContent ?? "",
+
+                date:
+                    new Date(item.querySelector("pubDate")?.textContent),
+
+                rss:`rss/${id}.xml`
+
+            });
+
+        }
+        catch(e){
+            console.log(id,e);
+        }
+
+    }
+
+    videos.sort((a,b)=>b.date-a.date);
+
+    document.getElementById("status").textContent=
+        "最終取得 "+new Date().toLocaleString();
+
+    const list=document.getElementById("list");
+
+    for(const v of videos){
+
+        list.innerHTML+=`
+        <div class="item">
+            <div class="name">${v.channel}</div>
+            <div class="title">${v.title}</div>
+            <div>${v.date.toLocaleString()}</div>
+
+            <div class="links">
+                <a href="${v.link}" target="_blank">動画</a>
+                <a href="${v.rss}" target="_blank">RSS</a>
+            </div>
+        </div>
+        `;
+    }
+
+}
+
+load();
+
+</script>
+
+</body>
+</html>
