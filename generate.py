@@ -59,12 +59,17 @@ def make_feed(user_id, items):
 <img src="{thumb}"><br><br>
 {v["shortDescription"]}
 """
-
         e.description(description)
-
         e.pubDate(v["registeredAt"])
-
     fg.rss_file(str(RSS_DIR / f"{user_id}.xml"))
+
+def make_all_feed(items):
+    print("Total videos:", len(items))
+    items.sort(
+        key=lambda x: x["essential"]["registeredAt"],
+        reverse=True
+    )
+    print("Newest:", items[0]["essential"]["title"])
 
 
 def main():
@@ -74,12 +79,10 @@ def main():
 
     for user in users:
         print("Processing", user)
-
         items = fetch(user)
-
         make_feed(user, items)
-
         all_items.extend(items)
+    make_all_feed(all_items)
 
 
 if __name__ == "__main__":
