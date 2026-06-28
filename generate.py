@@ -70,12 +70,16 @@ def make_feed(user_id, items):
 def main():
     users = load_users()
 
-    for user in users:
-        print("Processing", user)
+all_items = []
 
-        items = fetch(user)
+for user in users:
+    print("Processing", user)
 
-        make_feed(user, items)
+    items = fetch(user)
+
+    make_feed(user, items)
+
+    all_items.extend(items)
 
 
 if __name__ == "__main__":
