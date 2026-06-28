@@ -1,0 +1,35 @@
+name: Update NicoNico RSS
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install requests feedgen
+
+      - name: Generate RSS
+        run: |
+          python generate.py
+
+      - name: Commit RSS
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add rss/*.xml
+          git commit -m "update rss" || exit 0
+          git push
