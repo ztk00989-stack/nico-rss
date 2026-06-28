@@ -29,6 +29,27 @@ body{
 .links a{
     margin-right:15px;
 }
+
+.item{
+    display:flex;
+    gap:16px;
+    border-bottom:1px solid #ccc;
+    padding:15px 0;
+}
+
+.thumb{
+    width:160px;
+    flex-shrink:0;
+}
+
+.thumb img{
+    width:100%;
+    border-radius:6px;
+}
+
+.info{
+    flex:1;
+}
 </style>
 
 </head>
@@ -67,6 +88,12 @@ if (items.length === 0) continue;
 
 const item = items[items.length - 1];
 
+const description =
+    item.querySelector("description")?.textContent ?? "";
+
+const thumb =
+    description.match(/src="([^"]+)"/)?.[1] ?? "";
+
             if(!item) continue;
 
             videos.push({
@@ -87,6 +114,7 @@ const item = items[items.length - 1];
 
                 rss:`rss/${id}.xml`
 
+                thumb: thumb,
             });
 
         }
@@ -103,21 +131,33 @@ const item = items[items.length - 1];
 
     const list=document.getElementById("list");
 
-    for(const v of videos){
+for(const v of videos){
 
-        list.innerHTML+=`
-        <div class="item">
+    list.innerHTML+=`
+    <div class="item">
+
+        <div class="thumb">
+            <img src="${v.thumb}">
+        </div>
+
+        <div class="info">
+
             <div class="name">${v.channel}</div>
+
             <div class="title">${v.title}</div>
+
             <div>${v.date.toLocaleString()}</div>
 
             <div class="links">
                 <a href="${v.link}" target="_blank">動画</a>
                 <a href="${v.rss}" target="_blank">RSS</a>
             </div>
+
         </div>
-        `;
-    }
+
+    </div>
+    `;
+}
 
 }
 
