@@ -120,6 +120,10 @@ def make_all_feed(items):
 
         e.pubDate(v["registeredAt"])
 
+    print("===== OUTPUT ORDER =====")
+for item in items[:5]:
+    print(item["essential"]["registeredAt"], item["essential"]["title"])
+
     fg.rss_file(str(RSS_DIR / "all.xml"))
 
 
