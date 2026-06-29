@@ -28,6 +28,12 @@ def fetch(user_id):
 
 
 def make_feed(user_id, items):
+    
+    items.sort(
+        key=lambda x: x["essential"]["registeredAt"],
+        reverse=True
+    )
+    
     fg = FeedGenerator()
 
     fg.id(f"nico-user-{user_id}")
